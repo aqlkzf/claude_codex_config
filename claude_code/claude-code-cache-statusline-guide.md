@@ -6,6 +6,12 @@ Instructions for Claude Code to configure a cache-monitoring status line (cw/cr/
 
 User asks to monitor cache performance, add cache metrics to their status line, mentions wanting to see cw/cr/hit, or says "set up the same status line as mine / as the reference".
 
+## Shortcut: `/statusline`
+
+Claude Code ships a built-in `/statusline` slash command (backed by the `statusline-setup` agent) that walks the user through writing a status-line script and merging the `statusLine` block into `~/.claude/settings.json`.
+
+If the user just wants *some* status line, point them there. If they want **this** status line — the cache cw/cr/hit two-liner described below — invoke `/statusline` and feed it this guide as the spec, **or** skip `/statusline` entirely and follow the steps below directly. Either path produces the same result; the steps below are the source of truth for the script contents.
+
 ## What to Do
 
 ### 1. Write the script to `~/.claude/statusline-command.sh`
