@@ -1,21 +1,21 @@
 # Add a Custom Model to Claude Code's `/model` Picker
 
-Instructions for Claude Code to register an extra entry (e.g. `claude-opus-4-6[1m]`) in the `/model` menu via three environment variables in `~/.claude/settings.json`.
+Guideline for Claude Code to follow when the user asks to register an extra entry (e.g. `claude-opus-4-6[1m]`) in the `/model` menu. Claude Code reads this file and then performs the steps below against the user's local `~/.claude/settings.json` — the user is not expected to edit anything by hand.
 
 ## When to Use
 
-User asks to:
+The user asks to:
 - Add Opus 4.6, Opus 4.7, a 1M-context variant, or any non-default model ID to the `/model` picker
 - Use a model ID exposed by a proxy/relay (`ANTHROPIC_BASE_URL`) that the official picker doesn't list
 - Make a custom model selectable across sessions instead of typing `/model <id>` every time
 
-If the user just wants to switch models once, point them at `/model <id>` — no config change needed.
+If the user only wants a one-off switch, point them at `/model <id>` — no config change needed; do not apply this guide.
 
-## What to Do
+## What Claude Code Should Do
 
 ### 1. Merge the three env vars into `~/.claude/settings.json`
 
-Preserve every other key in the file. The three vars work as a set — all three are required for the entry to render correctly.
+Read the file (create it if missing), parse the JSON, **merge** the keys below into the `"env"` block, write it back. Preserve every other key in `env` (`ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, etc.) and every other top-level key (`permissions`, `model`, `statusLine`, `enabledPlugins`, `theme`, …). All three vars are required as a set — partial config does not render an entry.
 
 ```json
 {
@@ -35,11 +35,13 @@ Preserve every other key in the file. The three vars work as a set — all three
 
 The `[1m]` suffix is a routing hint for 1M-context variants, recognized by Anthropic's API and most relays — keep it if the user wants the extended context window, drop it for the 200k default.
 
-### 2. Restart Claude Code
+### 2. Restart prompt
 
-The `env` block is read at startup. The new entry appears at the bottom of the `/model` menu after restart.
+The `env` block is read at startup, not on `/clear`. After writing the file, tell the user to fully restart Claude Code; the new entry will appear at the bottom of the `/model` menu.
 
 ## Full Example (with proxy + default model preserved)
+
+The merged `settings.json` should look like this — note that `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, and the top-level `"model"` key are **not** introduced by this guide; they are left untouched if already present.
 
 ```json
 {
