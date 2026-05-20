@@ -2,6 +2,8 @@
 
 Personal Claude Code / Codex configuration snippets I reuse across machines.
 
+> **TL;DR for everyone else:** open Claude Code anywhere and paste one of the prompts under [Quick install](#quick-install-let-claude-code-do-it) — Claude reads the guide from this repo and applies it to your `~/.claude/` for you.
+
 Currently includes:
 
 - [`claude_code/claude-code-cache-statusline-guide.md`](claude_code/claude-code-cache-statusline-guide.md) — two-line status line showing model, abbreviated CWD, git branch, context-usage bar, cache write/read/hit ratio, session cost, and elapsed time.
