@@ -13,6 +13,19 @@ Currently includes:
 
 Open Claude Code in any directory and paste one of the prompts below. Claude will read the guide from this repo and apply it to your local `~/.claude/` — no manual copy/paste needed.
 
+### Both at once
+
+```text
+Read these two guides and apply both to my machine end-to-end:
+  1. https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-cache-statusline-guide.md
+  2. https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-add-opus46model.md
+
+Merge everything into ~/.claude/settings.json — preserve every existing key
+(env, permissions, model, enabledPlugins, theme, etc.). Don't change my default
+"model" key. Use ~/.claude/statusline-command.sh (no hardcoded /home/<me>/ path).
+Run each guide's verification step and remind me to fully restart Claude Code at the end.
+```
+
 ### Status line
 
 ```text
