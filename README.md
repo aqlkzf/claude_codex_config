@@ -11,54 +11,70 @@ Currently includes:
 
 ## Quick install (let Claude Code do it)
 
-Open Claude Code in any directory and paste one of the prompts below. Claude will read the guide from this repo and apply it to your local `~/.claude/` — no manual copy/paste needed.
+Open Claude Code in any directory and paste **one** of the prompts below. Claude fetches the guides from this repo and applies them to your local `~/.claude/` — no manual copy/paste needed.
 
-### Both at once
+### Install everything (recommended)
+
+This prompt is forward-compatible — when new guides are added to `claude_code/` later, the same prompt picks them up automatically because it tells Claude to read the README first and discover the current list.
 
 ```text
-Read these two guides and apply both to my machine end-to-end:
-  1. https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-cache-statusline-guide.md
-  2. https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-add-opus46model.md
+Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md
+and apply every guide listed under "Currently includes" to my machine end-to-end.
 
-Merge everything into ~/.claude/settings.json — preserve every existing key
-(env, permissions, model, enabledPlugins, theme, etc.). Don't change my default
-"model" key. Use ~/.claude/statusline-command.sh (no hardcoded /home/<me>/ path).
-Run each guide's verification step and remind me to fully restart Claude Code at the end.
+For each guide:
+  1. Fetch the raw URL (https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/<path>).
+  2. Follow its "What to Do" section against my local files.
+  3. Run its Verification step and show me the output.
+
+Hard rules across all guides:
+  - Always MERGE into ~/.claude/settings.json — never overwrite. Preserve every
+    existing key (env, permissions, model, enabledPlugins, statusLine, theme,
+    extraKnownMarketplaces, etc.).
+  - Don't change my default top-level "model" key.
+  - Use ~/.claude/<filename> in any settings paths — no hardcoded /home/<me>/ paths.
+  - If a guide says it needs /<slash-command> (e.g. /statusline), invoke that first
+    and feed the guide's spec to it; fall back to direct execution only if the
+    command is unavailable.
+
+At the end, list which guides you applied, what changed in settings.json (keys added,
+keys preserved), and remind me to fully restart Claude Code.
 ```
 
-### Status line
+### Install just one
+
+Prefer the combined prompt above. Use these only if you want a single config in isolation.
+
+<details>
+<summary>Status line only</summary>
 
 ```text
 Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-cache-statusline-guide.md
-and follow it end-to-end to set up the cache-metrics status line on this machine:
-
-1. Write the script verbatim to ~/.claude/statusline-command.sh (create the directory if missing).
-2. chmod +x it.
-3. Merge the statusLine block into ~/.claude/settings.json — preserve every other key
-   (env, permissions, model, enabledPlugins, theme, etc.). If settings.json doesn't
-   exist, create it with just the statusLine block.
-4. Run the verification snippet from the guide and show me the rendered output.
-5. Remind me to restart Claude Code for the status line to take effect.
-
-Use ~/.claude/statusline-command.sh in the settings command (not a hardcoded /home/<me>/ path).
-Don't touch any other settings.
+and follow it end-to-end. Merge into ~/.claude/settings.json without touching other keys;
+use ~/.claude/statusline-command.sh in the command path; run the verification snippet;
+remind me to restart Claude Code.
 ```
 
-### Custom model in `/model` picker
+</details>
+
+<details>
+<summary>Custom model in `/model` picker only</summary>
 
 ```text
 Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/claude_code/claude-code-add-opus46model.md
-and follow it end-to-end to register Opus 4.6 (1M context) in my /model picker:
-
-1. Merge the three ANTHROPIC_CUSTOM_MODEL_OPTION* env vars into ~/.claude/settings.json's
-   "env" block — preserve every other key (ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN,
-   permissions, model, statusLine, enabledPlugins, theme, etc.). If settings.json or
-   the "env" block doesn't exist, create only what's needed.
-2. Run the verification jq snippet from the guide and show me the output.
-3. Remind me to restart Claude Code so /model picks up the new entry.
-
-Don't touch any other settings. Don't change my default "model" key.
+and follow it end-to-end. Merge the three ANTHROPIC_CUSTOM_MODEL_OPTION* env vars into
+~/.claude/settings.json's "env" block without touching other keys; don't change my
+default "model" key; run the verification jq snippet; remind me to restart Claude Code.
 ```
+
+</details>
+
+## Adding a new guide (for future me)
+
+To stay compatible with the "Install everything" prompt above:
+
+1. Drop the new guide into `claude_code/` following the standard layout (`When to Use → What to Do → Verification → Troubleshooting → Requirements`).
+2. Add one bullet under **Currently includes** linking to it — that list is what the bootstrap prompt iterates.
+3. Push to `main`. The prompt's URL (`raw.githubusercontent.com/.../main/README.md`) picks it up immediately; no prompt edits needed.
 
 ## Manual install
 
