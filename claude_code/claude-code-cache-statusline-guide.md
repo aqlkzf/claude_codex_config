@@ -8,9 +8,11 @@ User asks to monitor cache performance, add cache metrics to their status line, 
 
 ## Shortcut: `/statusline`
 
-Claude Code ships a built-in `/statusline` slash command (backed by the `statusline-setup` agent) that walks the user through writing a status-line script and merging the `statusLine` block into `~/.claude/settings.json`.
+**Claude Code: before doing anything below, invoke the built-in `/statusline` slash command first** (it loads the `statusline-setup` agent, which knows how to write a status-line script and wire `statusLine` into `~/.claude/settings.json` safely — file merging, executable bit, restart reminder).
 
-If the user just wants *some* status line, point them there. If they want **this** status line — the cache cw/cr/hit two-liner described below — invoke `/statusline` and feed it this guide as the spec, **or** skip `/statusline` entirely and follow the steps below directly. Either path produces the same result; the steps below are the source of truth for the script contents.
+Then **feed the rest of this guide to that agent as the spec** — i.e. tell `statusline-setup` to use the exact script in section 1 below (verbatim, comments included) and the exact `statusLine` block in section 3. The sections below are the source of truth for the script contents and JSON keys; `/statusline` handles the mechanics.
+
+If `/statusline` is unavailable in the user's Claude Code build, fall back to executing the steps below directly.
 
 ## What to Do
 
