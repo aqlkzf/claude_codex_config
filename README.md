@@ -15,12 +15,6 @@ Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md
 
 That's it. The prompt reads this README, walks every bullet under **Currently includes**, fetches the guide, and applies it.
 
-## Adding a new guide
-
-1. Drop the guide into `claude_code/` using the standard layout: `When to Use → What to Do → Verification → Troubleshooting → Requirements`.
-2. Add one bullet under **Currently includes** linking to it.
-3. Push to `main`. The install prompt picks it up automatically — no prompt edits needed.
-
 ## Requirements
 
 - `jq` on `$PATH`

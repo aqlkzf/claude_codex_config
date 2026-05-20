@@ -29,8 +29,16 @@ When the user says "add Opus 4.6 to my model picker" or "set up the cache status
 ## When editing the guides themselves
 
 - Each guide is a *standalone* doc — a fresh Claude Code reading just that one file via `WebFetch` must be able to execute it. Don't introduce cross-guide dependencies or assume shared context.
-- Keep the structure: **When to Use → What to Do → Verification → Troubleshooting → Requirements**. The README's quick-install prompts assume this layout.
-- If you add a new guide under `claude_code/`, also add (a) a bullet to the README's "Currently includes" list and (b) a paste-and-go prompt under "Quick install".
+- Keep the structure: **When to Use → What to Do → Verification → Troubleshooting → Requirements**. The README's install prompt assumes this layout.
+
+## Adding a new guide
+
+The README is consumed by another Claude Code instance at install time — the install prompt fetches `README.md`, iterates every bullet under **Currently includes**, and applies each guide. To stay compatible with that contract:
+
+1. Drop the new guide into `claude_code/` following the standard 5-section layout above.
+2. Add **one** bullet under **Currently includes** in `README.md` linking to it (relative path, not raw URL — the install prompt knows the base).
+3. Don't add prose, alternate prompts, or extra sections to the README. Anything that changes how Claude *behaves* during install belongs in this file (CLAUDE.md), not the README. The README is a manifest the AI iterates; this file is the operating manual.
+4. Push to `main`. The install URL (`raw.githubusercontent.com/.../main/README.md`) picks it up immediately.
 
 ## Repo workflow
 
