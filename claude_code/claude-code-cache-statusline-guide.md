@@ -1,14 +1,16 @@
 # Cache Metrics Status Line — Setup Guide for Claude Code
 
-Instructions for Claude Code to configure cache monitoring (cw/cr/hit) on a user's status line.
+Instructions for Claude Code to configure a cache-monitoring status line (cw/cr/hit) that matches the reference user's setup exactly.
 
 ## When to Use
 
-User asks to monitor cache performance, add cache metrics to their status line, or mentions wanting to see cw/cr/hit.
+User asks to monitor cache performance, add cache metrics to their status line, mentions wanting to see cw/cr/hit, or says "set up the same status line as mine / as the reference".
 
 ## What to Do
 
 ### 1. Write the script to `~/.claude/statusline-command.sh`
+
+Write this file verbatim — comments included. This is the exact script the reference user runs.
 
 ```bash
 #!/bin/bash
@@ -17,12 +19,15 @@ input=$(cat)
 MODEL=$(echo "$input" | jq -r '.model.display_name')
 DIR=$(echo "$input" | jq -r '.workspace.current_dir')
 
-fish_path() {
+# Path abbreviation: shorten all parent dirs to their first letter
+abbrev_path() {
   local path="$1"
   local home="$HOME"
+  # Replace $HOME prefix with ~
   if [[ "$path" == "$home"* ]]; then
     path="~${path#$home}"
   fi
+  # Split into parts, abbreviate all but the last
   local IFS='/'
   read -ra parts <<< "$path"
   local result=""
@@ -41,7 +46,7 @@ fish_path() {
   echo "$result"
 }
 
-ABBREV_DIR=$(fish_path "$DIR")
+ABBREV_DIR=$(abbrev_path "$DIR")
 
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
@@ -51,6 +56,7 @@ DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
 
 CYAN='\033[36m'; GREEN='\033[32m'; YELLOW='\033[33m'; RED='\033[31m'; MAGENTA='\033[35m'; RESET='\033[0m'
 
+# Pick bar color based on context usage
 if [ "$PCT" -ge 90 ]; then BAR_COLOR="$RED"
 elif [ "$PCT" -ge 70 ]; then BAR_COLOR="$YELLOW"
 else BAR_COLOR="$GREEN"; fi
@@ -62,6 +68,7 @@ for ((i=0; i<EMPTY; i++)); do BAR+=$'\xe2\x96\x91'; done
 
 MINS=$((DURATION_MS / 60000)); SECS=$(((DURATION_MS % 60000) / 1000))
 
+# Format token counts (e.g., 120000 -> 120k, 1500 -> 1.5k)
 fmt_tokens() {
   local t="$1"
   if [ "$t" -ge 1000 ]; then
@@ -74,6 +81,7 @@ fmt_tokens() {
 CW_FMT=$(fmt_tokens "$CACHE_WRITE")
 CR_FMT=$(fmt_tokens "$CACHE_READ")
 
+# Calculate cache hit ratio: cr / (cr + cw)
 CACHE_HIT_PCT=""
 CACHE_TOTAL=$((CACHE_READ + CACHE_WRITE))
 if [ "$CACHE_TOTAL" -gt 0 ]; then
@@ -85,7 +93,7 @@ git rev-parse --git-dir > /dev/null 2>&1 && BRANCH=" | 🌿 $(git branch --show-
 
 echo -e "${CYAN}[$MODEL]${RESET} 📁 ${ABBREV_DIR}$BRANCH"
 COST_FMT=$(printf '$%.2f' "$COST")
-
+# Line 2: bar, usage%, cache write/read/hit, cost, time
 CACHE_INFO="${YELLOW}cw:${CW_FMT}${RESET} ${GREEN}cr:${CR_FMT}${RESET}"
 HIT_INFO=""
 if [ -n "$CACHE_HIT_PCT" ]; then
@@ -104,21 +112,23 @@ echo -e "${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${CACHE_INFO}${HIT_INFO} | ${YELLO
 chmod +x ~/.claude/statusline-command.sh
 ```
 
-### 3. Add `statusLine` to `~/.claude/settings.json`
+### 3. Merge `statusLine` into `~/.claude/settings.json`
 
-Merge this block into the user's existing settings (do not overwrite other keys):
+Merge this block into the user's existing settings (preserve all other keys — do not overwrite `env`, `permissions`, `model`, `enabledPlugins`, etc.):
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline-command.sh",
+    "command": "bash /home/shuai/.claude/statusline-command.sh",
     "padding": 0
   }
 }
 ```
 
-The default interpreter is bash — no need to prefix `bash` in the command field. The `#!/bin/bash` shebang in the script is sufficient.
+Notes:
+- Replace `/home/shuai/` with the target user's actual `$HOME` path (or use `~/.claude/statusline-command.sh` — Claude Code expands `~`). The reference setup uses the explicit absolute path with a leading `bash` invocation; either form works as long as the script is executable.
+- `padding: 0` removes the blank line above the status line so it sits flush against the prompt.
 
 ### 4. Tell the user to restart Claude Code
 
@@ -158,6 +168,9 @@ The status line loads on startup. Changes take effect after restarting the CLI s
 ████████░░ 80% | cw:45k cr:120k hit:73% | $1.23 | ⏱️ 2m 15s
 ```
 
+Line 1: model · abbreviated CWD (parent dirs collapsed to first letter) · git branch (if inside a repo).
+Line 2: context-usage bar · usage% · cache write/read/hit · session cost · elapsed time.
+
 ## Diagnostic Reference
 
 If the user asks what the numbers mean:
@@ -167,8 +180,23 @@ If the user asks what the numbers mean:
 - **Both 0**: First turn of session, no cache data yet.
 - **hit drops after compaction**: Expected — context compression rewrites the conversation prefix.
 
+## Verification
+
+After restart, the status line should render two lines under the prompt. Quick sanity checks:
+
+```bash
+# 1. Script is executable and runs without error on sample input
+echo '{"model":{"display_name":"test"},"workspace":{"current_dir":"/tmp"},"cost":{"total_cost_usd":0,"total_duration_ms":0},"context_window":{"used_percentage":0,"current_usage":{"cache_read_input_tokens":0,"cache_creation_input_tokens":0}}}' \
+  | ~/.claude/statusline-command.sh
+
+# 2. statusLine block is present in settings
+jq '.statusLine' ~/.claude/settings.json
+```
+
+If the second line renders without colors, the terminal isn't interpreting `\033[` escapes — confirm `echo -e` is the bash builtin (the `#!/bin/bash` shebang ensures this).
+
 ## Requirements
 
-- `jq` must be installed on the user's system
-- `bash` (script uses bashisms: `read -ra`, `[[ ]]`, arithmetic)
-- Claude Code version with `statusLine` support in settings.json
+- `jq` installed on the user's system
+- `bash` or `zsh` to run the script (the `#!/bin/bash` shebang is what executes — your interactive shell doesn't matter). Uses `read -ra`, `[[ ]]`, and `(( ))`, all supported by both.
+- Claude Code version with `statusLine` support in `settings.json`
