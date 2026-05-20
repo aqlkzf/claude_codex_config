@@ -10,7 +10,7 @@ Personal Claude Code / Codex configuration snippets I reuse across machines.
 ## Install (paste into Claude Code)
 
 ```text
-Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md and install every config it lists. Merge into ~/.claude/settings.json (never overwrite), don't change my default "model" key, then remind me to restart Claude Code.
+Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md and install every config it lists. For each bullet under "Currently includes", fetch the guide at https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/<path> and apply it end-to-end. Merge into ~/.claude/settings.json (never overwrite), don't change my default "model" key, then remind me to restart Claude Code.
 ```
 
 That's it. The prompt reads this README, walks every bullet under **Currently includes**, fetches the guide, and applies it.
