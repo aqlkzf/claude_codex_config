@@ -13,9 +13,15 @@ Currently includes:
 
 Open Claude Code in any directory and paste **one** of the prompts below. Claude fetches the guides from this repo and applies them to your local `~/.claude/` — no manual copy/paste needed.
 
-### Install everything (recommended)
+### One-liner (simplest)
 
-This prompt is forward-compatible — when new guides are added to `claude_code/` later, the same prompt picks them up automatically because it tells Claude to read the README first and discover the current list.
+```text
+Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md and install every config it lists.
+```
+
+### Install everything (with guardrails)
+
+Same idea as the one-liner, but spells out the safety rules. Use this if the one-liner produces an unsafe merge on your setup.
 
 ```text
 Read https://raw.githubusercontent.com/aqlkzf/claude_codex_config/main/README.md
