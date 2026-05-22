@@ -6,6 +6,7 @@ Personal Claude Code / Codex configuration snippets I reuse across machines.
 
 - [`claude_code/claude-code-cache-statusline-guide.md`](claude_code/claude-code-cache-statusline-guide.md) — two-line status line with model, CWD, git branch, context-usage bar, cache cw/cr/hit, session cost, and elapsed time.
 - [`claude_code/claude-code-add-opus46model.md`](claude_code/claude-code-add-opus46model.md) — register a custom model entry (e.g. Opus 4.6 with 1M context) in the `/model` picker.
+- [`claude_code/claude-code-skip-webfetch-preflight.md`](claude_code/claude-code-skip-webfetch-preflight.md) — skip the preflight confirmation on WebFetch so URLs are fetched without prompting.
 
 ## Install (paste into Claude Code)
 
